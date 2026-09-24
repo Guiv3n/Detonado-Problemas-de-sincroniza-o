@@ -1,0 +1,1 @@
+# Detonado-Problemas-de-sincroniza-o
