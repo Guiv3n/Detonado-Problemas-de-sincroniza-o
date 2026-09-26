@@ -15,7 +15,7 @@ A página transforma cada problema em um desafio visual. O objetivo é experimen
 - **Barbearia de Dionísio — Barbeiro Adormecido:** controle a cadeira, a fila de espera e os clientes que chegam enquanto o barbeiro dorme quando não há trabalho.
 
 ## Materiais
-
+- [Apresentação dos problemas de sincronização (youtube)](https://youtu.be/zcUSQyNGY1c) 
 - [Guia de estudos em PDF](./SO2%20-%20Problemas%20Classicos%20de%20Sincronizacao%20-%20Guia%20de%20Estudos.pdf)
 - [Código-fonte da demonstração](./index.html)
 - [Lógica dos minigames](./app.js)
