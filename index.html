@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17324d">
+  <meta name="description" content="Detonado interativo sobre Produtor-Consumidor, Jantar dos Filósofos e Barbeiro Adormecido.">
+  <title>Detonado Problemas de Sincronização</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2317324d'/%3E%3Cpath d='M16 14h32v7H16zm4 11h24l-3 25H23z' fill='%23f3ecdc'/%3E%3Cpath d='M28 25h3v25h-3zm7 0h3v25h-3z' fill='%23b8862d'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#laboratorio">Pular para o laboratório</a>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Detonado Problemas de Sincronização — início"><span class="brand-mark">Δ</span> DETONADO // SINCRONIZAÇÃO</a>
+    <nav aria-label="Navegação principal">
+      <a href="#laboratorio">Minigames</a>
+      <a href="#guia">Guia</a>
+      <a href="#cola">Cola rápida</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow">A ágora dos sistemas operacionais</p>
+        <h1>Detonado dos problemas<br><span>de sincronização.</span></h1>
+        <p class="lede">Atravesse três desafios clássicos com analogias, estratégias e minigames. Aqui, mutex e semáforo deixam os pergaminhos e ganham vida.</p>
+        <a class="primary-link" href="#laboratorio">Começar pelo desafio <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="hero-diagram" aria-label="Diagrama decorativo de processos concorrentes">
+        <div class="process-card p1"><span>PROCESSO α</span><strong>pronto</strong></div>
+        <div class="process-card p2"><span>PROCESSO β</span><strong>espera</strong></div>
+        <div class="resource-core"><span>MUTEX</span><strong>01</strong></div>
+        <div class="signal-line line-a"></div><div class="signal-line line-b"></div>
+        <p>Quem entra na região crítica?</p>
+      </div>
+    </section>
+
+    <section class="lab-section" id="laboratorio">
+      <div class="section-heading">
+        <div><p class="eyebrow">Aprenda fazendo</p><h2>As provas da Ágora</h2></div>
+        <p>Escolha um cenário. Cada partida dura menos de um minuto e revela por que processos precisam de regras para compartilhar recursos.</p>
+      </div>
+
+      <div class="game-tabs" role="tablist" aria-label="Escolha um minigame">
+        <button class="game-tab" role="tab" aria-selected="false" aria-controls="game-producer" id="tab-producer" data-game="producer"><span>01</span> Produtor–Consumidor</button>
+        <button class="game-tab active" role="tab" aria-selected="true" aria-controls="game-philosophers" id="tab-philosophers" data-game="philosophers"><span>02</span> Jantar dos Filósofos</button>
+        <button class="game-tab" role="tab" aria-selected="false" aria-controls="game-barber" id="tab-barber" data-game="barber"><span>03</span> Barbeiro Adormecido</button>
+      </div>
+
+      <article class="game-panel" id="game-producer" role="tabpanel" aria-labelledby="tab-producer" hidden>
+        <div class="game-copy">
+          <p class="game-kicker">DESAFIO 01</p><h3>A padaria concorrente</h3>
+          <p>O padeiro coloca pães num balcão com seis espaços; o entregador retira um pão por pedido. Atenda a fila sem tentar tirar de um balcão vazio nem produzir além da capacidade.</p>
+          <div class="game-stats" aria-live="polite"><div><span>Tempo</span><strong id="pc-time">40s</strong></div><div><span>Entregas</span><strong id="pc-score">0</strong></div><div><span>Pedidos</span><strong id="pc-orders">0</strong></div></div>
+          <div class="game-actions"><button class="button-primary" id="pc-start">Iniciar turno</button><button class="button-secondary" id="pc-reset">Reiniciar</button></div>
+          <p class="tip"><strong>Meta:</strong> faça 12 entregas antes que 5 pedidos se acumulem. Operações inseguras serão bloqueadas pelo semáforo.</p>
+        </div>
+        <div class="game-stage bakery-stage">
+          <div class="station character-station"><img class="scenario-character baker-character" src="assets/personagens/padeiro-caricatura.png" alt="Caricatura do produtor vestido de padeiro e segurando um pão"><span>PRODUTOR</span><strong>Padaria</strong><button id="pc-produce" disabled>Produzir pão ＋</button></div>
+          <div class="buffer-wrap">
+            <div class="buffer-label"><span>BALCÃO / BUFFER</span><strong id="pc-buffer-label">0 / 6 pães</strong></div>
+            <div class="buffer" id="pc-buffer" aria-label="Balcão com 6 espaços"></div>
+            <p id="pc-message">O mutex está livre.</p>
+            <div class="order-queue-wrap" aria-live="polite">
+              <div class="buffer-label"><span>FILA DE PEDIDOS</span><strong id="pc-orders-stage">0 aguardando</strong></div>
+              <div class="order-queue" id="pc-order-queue" aria-label="Fila com capacidade para 5 pedidos"></div>
+            </div>
+          </div>
+          <div class="station consumer-station"><span>CONSUMIDOR</span><strong>Entregador</strong><button id="pc-consume" disabled>Entregar pedido →</button></div>
+        </div>
+      </article>
+
+      <article class="game-panel active" id="game-philosophers" role="tabpanel" aria-labelledby="tab-philosophers">
+        <div class="game-copy">
+          <p class="game-kicker">DESAFIO 02</p>
+          <h3>O banquete dos professores</h3>
+          <p>Cinco professores-filósofos dividem cinco garfos. Para comer, cada um precisa dos dois garfos vizinhos. Clique em quem deve tentar comer e não deixe a fome chegar a 100%.</p>
+          <div class="game-stats" aria-live="polite">
+            <div><span>Tempo</span><strong id="ph-time">45s</strong></div>
+            <div><span>Refeições</span><strong id="ph-score">0</strong></div>
+            <div><span>Estado</span><strong id="ph-status">Pronto</strong></div>
+          </div>
+          <div class="game-actions"><button class="button-primary" id="ph-start">Iniciar rodada</button><button class="button-secondary" id="ph-reset">Reiniciar</button></div>
+          <p class="tip"><strong>Dica:</strong> a barra mostra saciedade — cheia significa sem fome. Vizinhos não podem comer ao mesmo tempo; observe quais garfos saem da mesa.</p>
+        </div>
+        <div class="game-stage philosopher-stage" id="ph-stage" aria-label="Mesa dos filósofos">
+          <div class="table-center"><span>SIMPÓSIO</span><strong>5 garfos</strong></div>
+          <div class="fork fork-0" role="img" aria-label="Garfo 1, disponível na mesa"><svg viewBox="0 0 40 120" aria-hidden="true"><path d="M5 2h5v28c0 3 2 5 5 6V2h5v34h5V2h5v34c3-1 5-3 5-6V2h5v29c0 9-5 15-12 18v62c0 9-16 9-16 0V49C5 46 0 40 0 31V2h5z"/><path class="fork-shine" d="M14 50v59c0 3 2 4 4 4"/></svg><span>G1</span></div>
+          <div class="fork fork-1" role="img" aria-label="Garfo 2, disponível na mesa"><svg viewBox="0 0 40 120" aria-hidden="true"><path d="M5 2h5v28c0 3 2 5 5 6V2h5v34h5V2h5v34c3-1 5-3 5-6V2h5v29c0 9-5 15-12 18v62c0 9-16 9-16 0V49C5 46 0 40 0 31V2h5z"/><path class="fork-shine" d="M14 50v59c0 3 2 4 4 4"/></svg><span>G2</span></div>
+          <div class="fork fork-2" role="img" aria-label="Garfo 3, disponível na mesa"><svg viewBox="0 0 40 120" aria-hidden="true"><path d="M5 2h5v28c0 3 2 5 5 6V2h5v34h5V2h5v34c3-1 5-3 5-6V2h5v29c0 9-5 15-12 18v62c0 9-16 9-16 0V49C5 46 0 40 0 31V2h5z"/><path class="fork-shine" d="M14 50v59c0 3 2 4 4 4"/></svg><span>G3</span></div>
+          <div class="fork fork-3" role="img" aria-label="Garfo 4, disponível na mesa"><svg viewBox="0 0 40 120" aria-hidden="true"><path d="M5 2h5v28c0 3 2 5 5 6V2h5v34h5V2h5v34c3-1 5-3 5-6V2h5v29c0 9-5 15-12 18v62c0 9-16 9-16 0V49C5 46 0 40 0 31V2h5z"/><path class="fork-shine" d="M14 50v59c0 3 2 4 4 4"/></svg><span>G4</span></div>
+          <div class="fork fork-4" role="img" aria-label="Garfo 5, disponível na mesa"><svg viewBox="0 0 40 120" aria-hidden="true"><path d="M5 2h5v28c0 3 2 5 5 6V2h5v34h5V2h5v34c3-1 5-3 5-6V2h5v29c0 9-5 15-12 18v62c0 9-16 9-16 0V49C5 46 0 40 0 31V2h5z"/><path class="fork-shine" d="M14 50v59c0 3 2 4 4 4"/></svg><span>G5</span></div>
+          <button class="philosopher philosopher-0" data-philosopher="0"><img class="avatar" src="assets/professores/leonardo-filosofo.png" alt="Caricatura de Leonardo como filósofo grego"><span class="ph-name">Leonardo</span><span class="hunger" title="Saciedade"><i></i></span></button>
+          <button class="philosopher philosopher-1" data-philosopher="1"><img class="avatar" src="assets/professores/adilso-filosofo.png" alt="Caricatura de Adilso como filósofo grego"><span class="ph-name">Adilso</span><span class="hunger" title="Saciedade"><i></i></span></button>
+          <button class="philosopher philosopher-2" data-philosopher="2"><img class="avatar" src="assets/professores/ca-petry-filosofo.png" alt="Caricatura de C. A. Petry como filósofo grego"><span class="ph-name">C.A.Petry</span><span class="hunger" title="Saciedade"><i></i></span></button>
+          <button class="philosopher philosopher-3" data-philosopher="3"><img class="avatar" src="assets/professores/carmem-filosofo.png" alt="Caricatura de Carmem como filósofa grega"><span class="ph-name">Carmem</span><span class="hunger" title="Saciedade"><i></i></span></button>
+          <button class="philosopher philosopher-4" data-philosopher="4"><img class="avatar" src="assets/professores/lisandro-filosofo.png" alt="Caricatura de Lisandro como filósofo grego"><span class="ph-name">Lisandro</span><span class="hunger" title="Saciedade"><i></i></span></button>
+        </div>
+      </article>
+
+      <article class="game-panel" id="game-barber" role="tabpanel" aria-labelledby="tab-barber" hidden>
+        <div class="game-copy">
+          <p class="game-kicker">DESAFIO 03</p><h3>A barbearia sincronizada</h3>
+          <p>Sem clientes, o barbeiro dorme. Quando alguém chega, ocupa uma das três cadeiras e precisa sinalizar que há trabalho. Chame a fila na ordem certa antes que clientes desistam.</p>
+          <div class="game-stats" aria-live="polite"><div><span>Tempo</span><strong id="sb-time">45s</strong></div><div><span>Cortes</span><strong id="sb-score">0</strong></div><div><span>Desistiram</span><strong id="sb-lost">0 / 3</strong></div></div>
+          <div class="game-actions"><button class="button-primary" id="sb-start">Abrir barbearia</button><button class="button-secondary" id="sb-reset">Reiniciar</button></div>
+          <p class="tip"><strong>Meta:</strong> faça 8 cortes. Se não há clientes, deixe o barbeiro dormir — esperar sem gastar CPU é parte da solução.</p>
+        </div>
+        <div class="game-stage barber-stage">
+          <div class="barber-chair"><div class="barber-character-wrap"><img class="scenario-character barber-customer" id="sb-customer-art" src="assets/personagens/cliente-barbeiro-caricatura.png" alt="Caricatura de cliente careca sentado na cadeira do barbeiro com espuma na cabeça"><span class="barber-icon" id="sb-barber-icon">Zz</span></div><small id="sb-barber-state">DORMINDO</small><strong>Cadeira do barbeiro</strong><button id="sb-call" disabled>Chamar próximo</button></div>
+          <div class="waiting-room"><div class="buffer-label"><span>SALA DE ESPERA</span><strong id="sb-waiting-label">0 / 3</strong></div><div class="chairs" id="sb-chairs" aria-label="Três cadeiras de espera"></div><p id="sb-message">Aguardando abrir.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="guide" id="guia">
+      <div class="section-heading compact"><div><p class="eyebrow">Antes do código</p><h2>A ideia que conecta os três</h2></div></div>
+      <div class="concept-grid">
+        <article><span class="concept-number">01</span><h3>Recursos são limitados</h3><p>Espaço no balcão, garfos na mesa ou cadeiras na barbearia: não há um para cada processo.</p></article>
+        <article><span class="concept-number">02</span><h3>A ordem importa</h3><p>Duas ações corretas, executadas na ordem errada, podem travar tudo ou corromper um resultado.</p></article>
+        <article><span class="concept-number">03</span><h3>Esperar é uma ação</h3><p>Bloquear um processo até existir uma condição segura economiza trabalho e evita conflitos.</p></article>
+      </div>
+      <div class="story-grid">
+        <article class="story-card"><div class="story-head"><span>01</span><div><p>Produtor–Consumidor</p><h3>Um balcão, dois ritmos</h3></div></div><p><strong>Analogia:</strong> o padeiro não pode empilhar pão onde não há espaço; o entregador não pode retirar o que ainda não foi feito. O balcão é o <em>buffer</em>.</p><div class="flow"><span>produzir</span><b>→</b><span>esperar vaga</span><b>→</b><span>guardar</span><b>→</b><span>sinalizar item</span></div><pre><code>wait(vagas)
+wait(mutex)
+buffer.adicionar(item)
+signal(mutex)
+signal(itens)</code></pre><p class="learned"><b>O jogo mostra:</b> buffer limitado, exclusão mútua e bloqueio quando não há vaga ou item.</p></article>
+        <article class="story-card"><div class="story-head"><span>02</span><div><p>Jantar dos Filósofos</p><h3>Duas chaves por pessoa</h3></div></div><p><strong>Analogia:</strong> se todos pegarem o garfo esquerdo e esperarem o direito, ninguém termina: cada pessoa segura o que a vizinha precisa.</p><div class="flow"><span>pensar</span><b>→</b><span>pedir 2 garfos</span><b>→</b><span>comer</span><b>→</b><span>liberar</span></div><pre><code>wait(garfo_esq)
+wait(garfo_dir)
+comer()
+signal(garfo_dir)
+signal(garfo_esq)</code></pre><p class="learned"><b>O jogo mostra:</b> deadlock, starvation e a importância de uma política justa de aquisição.</p></article>
+        <article class="story-card"><div class="story-head"><span>03</span><div><p>Barbeiro Adormecido</p><h3>Trabalho só quando existe</h3></div></div><p><strong>Analogia:</strong> sem clientes, o barbeiro dorme. Uma chegada o acorda; com todas as cadeiras ocupadas, o próximo cliente vai embora.</p><div class="flow"><span>chegar</span><b>→</b><span>ver cadeira</span><b>→</b><span>acordar</span><b>→</b><span>atender</span></div><pre><code>wait(clientes)
+wait(mutex)
+fila.retirar()
+signal(mutex)
+signal(barbeiro)</code></pre><p class="learned"><b>O jogo mostra:</b> espera eficiente, sinalização e coordenação entre fila e prestador.</p></article>
+      </div>
+    </section>
+
+    <section class="cheatsheet" id="cola">
+      <p class="eyebrow">Cola rápida</p><h2>O vocabulário do árbitro</h2>
+      <div class="term-list">
+        <details><summary><span>Mutex</span><strong>Uma chave, um usuário por vez</strong></summary><p>Protege uma região crítica. Quem pega a chave entra; os demais aguardam até ela ser devolvida.</p></details>
+        <details><summary><span>Semáforo</span><strong>Um contador de permissões</strong></summary><p>Controla quantos processos podem avançar. Pode representar vagas livres, itens disponíveis ou recursos.</p></details>
+        <details><summary><span>Deadlock</span><strong>Todos esperam; ninguém avança</strong></summary><p>Cada processo segura um recurso e espera por outro preso com alguém. É o impasse da mesa.</p></details>
+        <details><summary><span>Starvation</span><strong>Alguém nunca recebe sua vez</strong></summary><p>O sistema continua funcionando, mas um processo é sempre ultrapassado e espera indefinidamente.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer><span>DETONADO // SINCRONIZAÇÃO</span><p>Uma odisseia interativa pelos dilemas clássicos dos Sistemas Operacionais.</p><a href="#inicio">Voltar ao templo ↑</a></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
